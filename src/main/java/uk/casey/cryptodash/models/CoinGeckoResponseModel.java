@@ -31,6 +31,8 @@ public class CoinGeckoResponseModel {
     this.last_updated = last_updated;
   }
 
+  public CoinGeckoResponseModel() {}
+
   public String getId() {
     return id;
   }

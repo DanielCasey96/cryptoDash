@@ -1,0 +1,88 @@
+openapi: 3.0.1
+info:
+  title: CryptoDash API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/markets/top:
+    get:
+      summary: Get top market items
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+          description: Number of items to return
+        - name: fiat
+          in: query
+          schema:
+            type: string
+            default: GBP
+          description: Fiat currency
+      responses:
+        '200':
+          description: List of market items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MarketItem'
+      security:
+        - bearerAuth: []
+  /api/markets/{assetId}:
+    get:
+      summary: Get market item by assetId
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-Za-z]+$'
+          description: Asset identifier
+        - name: fiat
+          in: query
+          schema:
+            type: string
+            default: GBP
+          description: Fiat currency
+      responses:
+        '200':
+          description: Market item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarketItem'
+      security:
+        - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    MarketItem:
+      type: object
+      properties:
+        id:
+          type: string
+        symbol:
+          type: string
+        name:
+          type: string
+        current_price:
+          type: number
+          format: double
+        price_change_24h:
+          type: number
+          format: double
+        price_change_percentage_24h:
+          type: number
+          format: double
+        last_updated:
+          type: string
+          format: date-time

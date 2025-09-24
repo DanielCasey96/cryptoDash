@@ -22,15 +22,13 @@ public class MarketController {
     return ResponseEntity.ok(marketListResponseModel);
   }
 
-  @GetMapping("/api/markets/{assetId}?fiat=GBP")
-    public ResponseEntity<CoinGeckoResponseModel> getMarketItem(
-       @RequestParam String currency,
-       @RequestParam String id,
-       @RequestParam String period) {
+  @GetMapping("/api/markets/item")
+  public ResponseEntity<CoinGeckoResponseModel> getMarketItem(
+      @RequestParam("assetId") String assetId, @RequestParam("fiat") String fiat) {
 
-      CoinGeckoResponseModel coinGeckoResponseModel = new CoinGeckoResponseModel();
+    CoinGeckoResponseModel coinGeckoResponseModel = new CoinGeckoResponseModel();
 
-      //TODO call the service
-      return ResponseEntity.ok(coinGeckoResponseModel);
+    // TODO call the service
+    return ResponseEntity.ok(coinGeckoResponseModel);
   }
 }
