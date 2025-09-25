@@ -27,12 +27,12 @@ public class MarketController {
   }
 
   @GetMapping("/api/markets/item")
-  public ResponseEntity<CoinGeckoResponseModel> getMarketItem(
-      @RequestParam("assetId") String assetId, @RequestParam("fiat") String fiat) {
+  public ResponseEntity<List<CoinGeckoResponseModel>> getMarketItem(
+      @RequestParam("assetId") String assetId,
+      @RequestParam("fiat") String fiat) {
 
-    CoinGeckoResponseModel coinGeckoResponseModel = new CoinGeckoResponseModel();
+    List<CoinGeckoResponseModel> item = coinGeckoService.getItem(assetId, fiat);
 
-    // TODO call the service
-    return ResponseEntity.ok(coinGeckoResponseModel);
+    return ResponseEntity.ok(item);
   }
 }

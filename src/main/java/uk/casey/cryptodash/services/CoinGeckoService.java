@@ -17,4 +17,8 @@ public class CoinGeckoService {
   public List<CoinGeckoResponseModel> getMarketList(String vsCurrency) {
     return coinGeckoProvider.getMarketList(vsCurrency);
   }
+
+  public List<CoinGeckoResponseModel> getItem(String itemId, String vsCurrency) {
+    return coinGeckoProvider.getItem(itemId, vsCurrency);
+  }
 }

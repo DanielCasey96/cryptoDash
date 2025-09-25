@@ -23,9 +23,6 @@ public class MarketControllerTest {
 
   @Test
   void getTopMarketsList_returnsOk() throws Exception {
-    when(mockCoinGeckoService.getMarketList("GBP"))
-        .thenReturn(List.of(new CoinGeckoResponseModel()));
-
     mockMvc
         .perform(
             get("/api/markets/top")

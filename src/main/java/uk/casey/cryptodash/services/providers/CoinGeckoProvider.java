@@ -27,4 +27,14 @@ public class CoinGeckoProvider {
     assert response != null;
     return Arrays.asList(response);
   }
+
+  public List<CoinGeckoResponseModel> getItem(String itemId, String vsCurrency) {
+    String baseUrl = "https://api.coingecko.com/api/v3/coins/markets";
+    String url =
+        baseUrl + "?vs_currency=" + vsCurrency + "&ids=" + itemId + "&price_change_percentage=24h";
+    CoinGeckoResponseModel[] response =
+        restTemplate.getForObject(url, CoinGeckoResponseModel[].class);
+    assert response != null;
+    return Arrays.asList(response);
+  }
 }

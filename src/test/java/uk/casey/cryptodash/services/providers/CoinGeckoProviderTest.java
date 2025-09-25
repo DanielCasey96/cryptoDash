@@ -54,6 +54,34 @@ public class CoinGeckoProviderTest {
     assertThrows(exception.getClass(), () -> coinGeckoProvider.getMarketList("GBP"));
   }
 
+  @Test
+  void getItem_returnsSuccess() throws Exception {
+    CoinGeckoResponseModel[] mockResponse = {new CoinGeckoResponseModel()};
+    when(restTemplate.getForObject(anyString(), eq(CoinGeckoResponseModel[].class)))
+        .thenReturn(new CoinGeckoResponseModel[] {new CoinGeckoResponseModel()});
+
+    List<CoinGeckoResponseModel> result = coinGeckoProvider.getItem("bitcoin", "GBP");
+    assertNotNull(result);
+    verify(restTemplate).getForObject(anyString(), eq(CoinGeckoResponseModel[].class));
+  }
+
+  @Test
+  void getItem_returnsError() throws Exception {
+    when(restTemplate.getForObject(anyString(), eq(CoinGeckoResponseModel[].class)))
+        .thenThrow(new RuntimeException("API error"));
+
+    assertThrows(RuntimeException.class, () -> coinGeckoProvider.getItem("bitcoin", "GBP"));
+  }
+
+  @ParameterizedTest
+  @MethodSource("errorProvider")
+  void getItem_handlesHttpErrorCodes(HttpClientErrorException exception) throws Exception {
+    when(restTemplate.getForObject(anyString(), eq(CoinGeckoResponseModel[].class)))
+        .thenThrow(exception);
+
+    assertThrows(exception.getClass(), () -> coinGeckoProvider.getItem("bitcoin", "GBP"));
+  }
+
   private static Stream<Arguments> errorProvider() {
     return Stream.of(
         Arguments.of(
