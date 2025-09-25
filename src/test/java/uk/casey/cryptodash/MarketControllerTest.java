@@ -1,21 +1,31 @@
 package uk.casey.cryptodash;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.casey.cryptodash.models.CoinGeckoResponseModel;
+import uk.casey.cryptodash.services.CoinGeckoService;
 
 @WebMvcTest(MarketController.class)
 public class MarketControllerTest {
+
+  @MockitoBean private CoinGeckoService mockCoinGeckoService;
 
   @Autowired private MockMvc mockMvc;
 
   @Test
   void getTopMarketsList_returnsOk() throws Exception {
+    when(mockCoinGeckoService.getMarketList("GBP"))
+        .thenReturn(List.of(new CoinGeckoResponseModel()));
+
     mockMvc
         .perform(
             get("/api/markets/top")

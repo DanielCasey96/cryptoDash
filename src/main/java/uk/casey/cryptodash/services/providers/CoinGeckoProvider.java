@@ -1,8 +1,10 @@
 package uk.casey.cryptodash.services.providers;
 
+import java.util.Arrays;
+import java.util.List;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import uk.casey.cryptodash.models.MarketListResponseModel;
+import uk.casey.cryptodash.models.CoinGeckoResponseModel;
 
 @Component
 public class CoinGeckoProvider {
@@ -13,13 +15,16 @@ public class CoinGeckoProvider {
     this.restTemplate = restTemplate;
   }
 
-  public MarketListResponseModel getMarketList(String vsCurrency) {
-    String baseUrl = "https://api.coingecko.com/api/v3/coints/markets";
+  public List<CoinGeckoResponseModel> getMarketList(String vsCurrency) {
+    String baseUrl = "https://api.coingecko.com/api/v3/coins/markets";
     String url =
         baseUrl
-            + "?vsCurrency="
+            + "?vs_currency="
             + vsCurrency
             + "&order=market_cap_desc&per_page=10&page=1&price_change_percentage=24h";
-    return restTemplate.getForObject(url, MarketListResponseModel.class);
+    CoinGeckoResponseModel[] response =
+        restTemplate.getForObject(url, CoinGeckoResponseModel[].class);
+    assert response != null;
+    return Arrays.asList(response);
   }
 }

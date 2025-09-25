@@ -1,7 +1,7 @@
 package uk.casey.cryptodash.models;
 
 import java.math.BigDecimal;
-import jdk.jfr.Timestamp;
+import java.time.Instant;
 
 public class CoinGeckoResponseModel {
 
@@ -12,7 +12,7 @@ public class CoinGeckoResponseModel {
   private BigDecimal market_cap;
   private BigDecimal price_change_24h;
   private BigDecimal price_change_percentage_24h;
-  private Timestamp last_updated;
+  private Instant last_updated;
 
   public CoinGeckoResponseModel(
       String id,
@@ -21,7 +21,7 @@ public class CoinGeckoResponseModel {
       BigDecimal current_price,
       BigDecimal price_change_24h,
       BigDecimal price_change_percentage_24h,
-      Timestamp last_updated) {
+      Instant last_updated) {
     this.id = id;
     this.symbol = symbol;
     this.name = name;
@@ -85,11 +85,11 @@ public class CoinGeckoResponseModel {
     return price_change_percentage_24h;
   }
 
-  public Timestamp getLast_updated() {
+  public Instant getLast_updated() {
     return last_updated;
   }
 
-  public void setLast_updated(Timestamp last_updated) {
+  public void setLast_updated(Instant last_updated) {
     this.last_updated = last_updated;
   }
 }

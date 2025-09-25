@@ -1,25 +1,29 @@
 package uk.casey.cryptodash;
 
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.casey.cryptodash.models.CoinGeckoResponseModel;
-import uk.casey.cryptodash.models.MarketListResponseModel;
+import uk.casey.cryptodash.services.CoinGeckoService;
 
 @RestController
 public class MarketController {
+  private CoinGeckoService coinGeckoService;
+
+  public MarketController(CoinGeckoService coinGeckoService) {
+    this.coinGeckoService = coinGeckoService;
+  }
 
   @GetMapping("/api/markets/top")
-  public ResponseEntity<MarketListResponseModel> getMarketList(
+  public ResponseEntity<List<CoinGeckoResponseModel>> getMarketList(
       @RequestParam(defaultValue = "10") int limit,
       @RequestParam(defaultValue = "GBP") String fiat) {
 
-    MarketListResponseModel marketListResponseModel = new MarketListResponseModel();
+    List<CoinGeckoResponseModel> marketList = coinGeckoService.getMarketList(fiat);
 
-    // TODO call the service to
-
-    return ResponseEntity.ok(marketListResponseModel);
+    return ResponseEntity.ok(marketList);
   }
 
   @GetMapping("/api/markets/item")
