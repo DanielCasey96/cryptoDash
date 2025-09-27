@@ -30,10 +30,9 @@ public class CoinGeckoServiceTest {
 
   @Test
   void getMarketItemReturnsSuccess() {
-    when(mockCoinGeckoProvider.getItem("bitcoin", "GBP"))
-        .thenReturn(List.of(new CoinGeckoResponseModel()));
+    when(mockCoinGeckoProvider.getItem("bitcoin", "GBP")).thenReturn(new CoinGeckoResponseModel());
 
-    List<CoinGeckoResponseModel> result = coinGeckoService.getItem("bitcoin", "GBP");
+    CoinGeckoResponseModel result = coinGeckoService.getItem("bitcoin", "GBP");
     assertNotNull(result);
   }
 }

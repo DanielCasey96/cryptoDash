@@ -60,7 +60,7 @@ public class CoinGeckoProviderTest {
     when(restTemplate.getForObject(anyString(), eq(CoinGeckoResponseModel[].class)))
         .thenReturn(new CoinGeckoResponseModel[] {new CoinGeckoResponseModel()});
 
-    List<CoinGeckoResponseModel> result = coinGeckoProvider.getItem("bitcoin", "GBP");
+    CoinGeckoResponseModel result = coinGeckoProvider.getItem("bitcoin", "GBP");
     assertNotNull(result);
     verify(restTemplate).getForObject(anyString(), eq(CoinGeckoResponseModel[].class));
   }
