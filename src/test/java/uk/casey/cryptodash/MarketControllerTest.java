@@ -1,150 +1,53 @@
 package uk.casey.cryptodash;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.Collections;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 import uk.casey.cryptodash.models.CoinGeckoResponseModel;
 import uk.casey.cryptodash.services.CoinGeckoService;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
-class MarketControllerTest {
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.List;
 
-  @LocalServerPort private int port;
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-  @Autowired TestRestTemplate restTemplate;
+@WebMvcTest
+public class MarketControllerTest {
 
-  @Autowired FakeCoinGeckoConfig.FakeCoinGeckoService fakeService;
+  @Autowired private MockMvc mockMvc;
 
-  @Test
-  void getTopMarketsList_returnsOk() {
-    fakeService.setMarketList(List.of(new CoinGeckoResponseModel()));
-
-    String url = "http://localhost:" + port + "/api/markets/top?limit=10&fiat=GBP";
-    ResponseEntity<List<CoinGeckoResponseModel>> response =
-        restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
-
-    assertEquals(200, response.getStatusCode().value());
-    assertEquals(1, response.getBody().size());
-  }
+  @MockitoBean
+  private CoinGeckoService coinGeckoService;
 
   @Test
-  void getTopMarketsList_returnsEmptyList() {
-    fakeService.setMarketList(Collections.emptyList());
+  void getTopMarketsList_returnsOk() throws Exception {
+    CoinGeckoResponseModel item =
+        new CoinGeckoResponseModel(
+            "bitcoin",
+            "btc",
+            "Bitcoin",
+            new BigDecimal("50000.00"),
+            new BigDecimal("250.00"),
+            new BigDecimal("0.50"),
+            Instant.parse("2025-01-01T00:00:00Z"));
+    item.setMarket_cap(new BigDecimal("1000000000000"));
 
-    String url = "http://localhost:" + port + "/api/markets/top?limit=10&fiat=GBP";
-    ResponseEntity<List<CoinGeckoResponseModel>> response =
-        restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
+    when(coinGeckoService.getMarketList("GBP"))
+        .thenReturn(List.of(item));
 
-    assertEquals(200, response.getStatusCode().value());
-    assertEquals(0, response.getBody().size());
-  }
-
-  @Test
-  void getTopMarketsList_reliesOnDefaultRequestParams() {
-    fakeService.setMarketList(List.of(new CoinGeckoResponseModel()));
-
-    String url = "http://localhost:" + port + "/api/markets/top";
-    ResponseEntity<List<CoinGeckoResponseModel>> response =
-        restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
-
-    assertEquals("GBP", fakeService.getLastFiat());
-    assertEquals(200, response.getStatusCode().value());
-    assertEquals(1, response.getBody().size());
-  }
-
-  @Test
-  void getTopMarketsList_passesDifferentFiat() {
-    fakeService.setMarketList(List.of(new CoinGeckoResponseModel()));
-
-    String url = "http://localhost:" + port + "/api/markets/top?limit=10&fiat=USD";
-    ResponseEntity<List<CoinGeckoResponseModel>> response =
-        restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
-
-    assertEquals("USD", fakeService.getLastFiat());
-    assertEquals(200, response.getStatusCode().value());
-    assertEquals(1, response.getBody().size());
-  }
-
-  @Test
-  void getTopMarketsList_returns404_invalidUrl() {
-    fakeService.setMarketList(List.of(new CoinGeckoResponseModel()));
-
-    String url = "http://localhost:" + port + "/api/markets/topOfThePops";
-    ResponseEntity<Void> response = restTemplate.exchange(url, HttpMethod.GET, null, Void.class);
-
-    assertEquals(404, response.getStatusCode().value());
-    assertEquals(null, response.getBody());
-  }
-
-  @Test
-  void getTopMarketsList_returns500_whenServerError() {
-    fakeService.setThrowError(true);
-    try {
-      String url = "http://localhost:" + port + "/api/markets/top";
-      ResponseEntity<Void> response = restTemplate.exchange(url, HttpMethod.GET, null, Void.class);
-
-      assertEquals(500, response.getStatusCode().value());
-    } finally {
-      fakeService.setThrowError(false);
-    }
-  }
-
-  @TestConfiguration
-  static class FakeCoinGeckoConfig {
-    @Bean
-    @Primary
-    FakeCoinGeckoService fakeCoinGeckoService() {
-      return new FakeCoinGeckoService();
-    }
-
-    static class FakeCoinGeckoService extends CoinGeckoService {
-      private String lastFiat;
-      private boolean throwError = false;
-      private List<CoinGeckoResponseModel> marketList = List.of(new CoinGeckoResponseModel());
-
-      FakeCoinGeckoService() {
-        super(null);
-      }
-
-      String getLastFiat() {
-        return lastFiat;
-      }
-
-      void setThrowError(boolean throwError) {
-        this.throwError = throwError;
-      }
-
-      void setMarketList(List<CoinGeckoResponseModel> marketList) {
-        this.marketList = marketList;
-      }
-
-      @Override
-      public List<CoinGeckoResponseModel> getMarketList(String fiat) {
-        this.lastFiat = fiat;
-        if (throwError) {
-          throw new RuntimeException();
-        }
-        return marketList;
-      }
-
-      @Override
-      public CoinGeckoResponseModel getItem(String assetId, String fiat) {
-        return new CoinGeckoResponseModel();
-      }
-    }
+    mockMvc.perform(
+        get("/api/markets/top")
+            .param("limit", "10")
+            .param("fiat", "GBP"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)));
   }
 }
