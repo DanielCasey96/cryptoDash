@@ -35,3 +35,14 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# .dockerignore
+.gradle
+build
+out
+.git
+.gitignore
+Dockerfile
+docker-compose.yml
+*.iml
+.idea
