@@ -1,7 +1,7 @@
 package uk.casey.cryptodash;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -17,12 +17,11 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.server.ResponseStatusException;
 import uk.casey.cryptodash.models.CoinGeckoResponseModel;
 import uk.casey.cryptodash.services.CoinGeckoService;
 
-@WebMvcTest
+@WebMvcTest(MarketController.class)
 @ActiveProfiles("test")
 class MarketControllerIntegrationTest {
 
@@ -34,10 +33,8 @@ class MarketControllerIntegrationTest {
   void getTopMarketsList_returnsOk() throws Exception {
     fakeService.setMarketList(List.of(new CoinGeckoResponseModel()));
 
-    mockMvc.perform(
-        get("/api/markets/top")
-            .param("limit", "10")
-            .param("fiat", "GBP"))
+    mockMvc
+        .perform(get("/api/markets/top").param("limit", "10").param("fiat", "GBP"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(1)));
   }
@@ -46,10 +43,8 @@ class MarketControllerIntegrationTest {
   void getTopMarketLists_returnsEmptyList() throws Exception {
     fakeService.setMarketList(Collections.emptyList());
 
-    mockMvc.perform(
-            get("/api/markets/top")
-                .param("limit", "10")
-                .param("fiat", "GBP"))
+    mockMvc
+        .perform(get("/api/markets/top").param("limit", "10").param("fiat", "GBP"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(0)));
   }
@@ -58,8 +53,8 @@ class MarketControllerIntegrationTest {
   void getTopMarketLists_reliesOnDefaultRequestParams() throws Exception {
     fakeService.setMarketList(List.of(new CoinGeckoResponseModel()));
 
-    mockMvc.perform(
-            get("/api/markets/top"))
+    mockMvc
+        .perform(get("/api/markets/top"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(1)));
   }
@@ -68,10 +63,8 @@ class MarketControllerIntegrationTest {
   void getTopMarketLists_passesDifferentFiat() throws Exception {
     fakeService.setMarketList(List.of(new CoinGeckoResponseModel()));
 
-    mockMvc.perform(
-            get("/api/markets/top")
-                .param("limit", "10")
-                .param("fiat", "USD"))
+    mockMvc
+        .perform(get("/api/markets/top").param("limit", "10").param("fiat", "USD"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(1)));
     assertEquals("USD", fakeService.getLastFiat());
@@ -81,10 +74,8 @@ class MarketControllerIntegrationTest {
   void getTopMarketList_returns404_invalidUrl() throws Exception {
     fakeService.setMarketList(List.of(new CoinGeckoResponseModel()));
 
-    mockMvc.perform(
-            get("/api/markets/topOfThePops")
-                .param("limit", "10")
-                .param("fiat", "GBP"))
+    mockMvc
+        .perform(get("/api/markets/topOfThePops").param("limit", "10").param("fiat", "GBP"))
         .andExpect(status().isNotFound());
   }
 
@@ -93,10 +84,8 @@ class MarketControllerIntegrationTest {
     try {
       fakeService.setThrowError(true);
 
-      mockMvc.perform(
-              get("/api/markets/top")
-                  .param("limit", "10")
-                  .param("fiat", "GBP"))
+      mockMvc
+          .perform(get("/api/markets/top").param("limit", "10").param("fiat", "GBP"))
           .andExpect(status().is5xxServerError());
     } finally {
       fakeService.setThrowError(false);
@@ -136,7 +125,8 @@ class MarketControllerIntegrationTest {
       public List<CoinGeckoResponseModel> getMarketList(String fiat) {
         this.lastFiat = fiat;
         if (throwError) {
-          throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
+          throw new ResponseStatusException(
+              HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
         }
         return marketList;
       }

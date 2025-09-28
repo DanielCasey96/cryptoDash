@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +26,7 @@ public class ServerletControllerIntegrationTest {
 
   @Autowired TestRestTemplate restTemplate;
 
-  @MockitoBean
-  private CoinGeckoService coinGeckoService;
+  @MockitoBean private CoinGeckoService coinGeckoService;
 
   @Test
   void getTopMarketList_returnsOk() {
@@ -44,16 +42,14 @@ public class ServerletControllerIntegrationTest {
             Instant.parse("2025-01-01T00:00:00Z"));
     item.setMarket_cap(new BigDecimal("1000000000000"));
 
-    when(coinGeckoService.getMarketList("GBP"))
-        .thenReturn(List.of(item));
+    when(coinGeckoService.getMarketList("GBP")).thenReturn(List.of(item));
 
     ResponseEntity<List<CoinGeckoResponseModel>> response =
         restTemplate.exchange(
             url,
             HttpMethod.GET,
             null,
-            new ParameterizedTypeReference<List<CoinGeckoResponseModel>>() {
-            });
+            new ParameterizedTypeReference<List<CoinGeckoResponseModel>>() {});
 
     assertEquals(200, response.getStatusCode().value());
     Assertions.assertNotNull(response.getBody());
