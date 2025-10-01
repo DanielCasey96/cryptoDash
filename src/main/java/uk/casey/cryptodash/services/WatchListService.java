@@ -3,6 +3,7 @@ package uk.casey.cryptodash.services;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class WatchListService {
   }
 
   public List<WatchListItemModel> getWatchList(UUID userId) {
+
     return dataBaseProvider.getWatchList(userId);
   }
 
@@ -31,7 +33,8 @@ public class WatchListService {
       BigDecimal value,
       Timestamp updated_at)
       throws SQLException {
-    return dataBaseProvider.createItem(userId, name, type, provider, category, value, updated_at);
+    return dataBaseProvider.createItem(
+        userId, name, type, provider, category, value, updated_at);
   }
 
   public boolean deleteFromWatchlist(UUID userId, int assetId) {

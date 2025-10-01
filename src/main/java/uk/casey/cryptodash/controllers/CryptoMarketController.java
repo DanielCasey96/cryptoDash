@@ -1,4 +1,4 @@
-package uk.casey.cryptodash;
+package uk.casey.cryptodash.controllers;
 
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -11,10 +11,10 @@ import uk.casey.cryptodash.services.CoinGeckoService;
 import uk.casey.cryptodash.utils.JwtUtil;
 
 @RestController
-public class MarketController {
+public class CryptoMarketController {
   private CoinGeckoService coinGeckoService;
 
-  public MarketController(CoinGeckoService coinGeckoService) {
+  public CryptoMarketController(CoinGeckoService coinGeckoService) {
     this.coinGeckoService = coinGeckoService;
   }
 

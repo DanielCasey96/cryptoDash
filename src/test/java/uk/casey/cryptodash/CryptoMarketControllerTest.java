@@ -18,12 +18,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.casey.cryptodash.controllers.CryptoMarketController;
 import uk.casey.cryptodash.models.CoinGeckoResponseModel;
 import uk.casey.cryptodash.services.CoinGeckoService;
 import uk.casey.cryptodash.utils.JwtUtil;
 
-@WebMvcTest(MarketController.class)
-public class MarketControllerTest {
+@WebMvcTest(CryptoMarketController.class)
+public class CryptoMarketControllerTest {
 
   @Autowired private MockMvc mockMvc;
 

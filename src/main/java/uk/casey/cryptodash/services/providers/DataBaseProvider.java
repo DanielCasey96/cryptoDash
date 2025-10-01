@@ -3,6 +3,7 @@ package uk.casey.cryptodash.services.providers;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import javax.sql.DataSource;
@@ -22,7 +23,7 @@ public class DataBaseProvider {
 
     String sql =
         "SELECT id, name, type, provider, category, value, updated_at "
-            + "FROM crypto WHERE user_id = ?";
+            + "FROM products WHERE user_id = ?";
 
     try (Connection conn = dataSource.getConnection();
         PreparedStatement statement = conn.prepareStatement(sql)) {
@@ -37,8 +38,8 @@ public class DataBaseProvider {
           response.setName(rs.getString("name"));
           response.setType(rs.getString("type"));
           response.setProvider(rs.getString("provider"));
-          response.setCategory(rs.getString("category"));
           response.setValue(rs.getBigDecimal("value"));
+          response.setCategory(rs.getString("category"));
           response.setUpdated_at(rs.getTimestamp("updated_at"));
           watchList.add(response);
         }
@@ -60,7 +61,7 @@ public class DataBaseProvider {
       throws SQLException {
 
     String sql =
-        "INSERT INTO crypto (user_id, name, type, provider, category, value, updated_at) "
+        "INSERT INTO products (user_id, name, type, provider, category, value, updated_at) "
             + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
     try (Connection conn = dataSource.getConnection();
@@ -84,7 +85,7 @@ public class DataBaseProvider {
 
   public boolean deleteItem(UUID userId, int assetId) {
 
-    String sql = "DELETE FROM crypto WHERE user_id = ? AND id = ?";
+    String sql = "DELETE FROM products WHERE user_id = ? AND id = ?";
 
     try (Connection conn = dataSource.getConnection();
         PreparedStatement statement = conn.prepareStatement(sql)) {
@@ -101,7 +102,7 @@ public class DataBaseProvider {
 
   public boolean updateItem(UUID userId, int assetId, BigDecimal value) {
 
-    String sql = "UPDATE crypto SET value = ? WHERE user_id = ? AND id = ?";
+    String sql = "UPDATE products SET value = ? WHERE user_id = ? AND id = ?";
 
     try (Connection conn = dataSource.getConnection();
         PreparedStatement statement = conn.prepareStatement(sql)) {

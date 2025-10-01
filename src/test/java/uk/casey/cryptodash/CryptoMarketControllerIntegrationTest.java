@@ -22,13 +22,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.server.ResponseStatusException;
+import uk.casey.cryptodash.controllers.CryptoMarketController;
 import uk.casey.cryptodash.models.CoinGeckoResponseModel;
 import uk.casey.cryptodash.services.CoinGeckoService;
 import uk.casey.cryptodash.utils.JwtUtil;
 
-@WebMvcTest(MarketController.class)
+@WebMvcTest(CryptoMarketController.class)
 @ActiveProfiles("test")
-class MarketControllerIntegrationTest {
+class CryptoMarketControllerIntegrationTest {
 
   @Autowired private MockMvc mockMvc;
 

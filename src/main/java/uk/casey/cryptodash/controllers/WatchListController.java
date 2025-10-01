@@ -1,4 +1,4 @@
-package uk.casey.cryptodash;
+package uk.casey.cryptodash.controllers;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -26,9 +26,8 @@ public class WatchListController {
 
   private static final Logger logger = LoggerFactory.getLogger(WatchListController.class);
 
-  @GetMapping("/api/user/watchlist")
+  @GetMapping(path = "/api/user/watchlist", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<WatchListItemModel>> getWatchList(
-      @RequestParam String fiat,
       @RequestHeader("userId") UUID userId,
       @RequestHeader("authorisation") String token) {
 
@@ -42,7 +41,7 @@ public class WatchListController {
   }
 
   @PostMapping(path = "/api/user/watchlist", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Boolean> addToWatchlist(
+  public ResponseEntity<Boolean> addToWatchlistItem(
       @RequestParam String name,
       @RequestHeader("userId") UUID userId,
       @RequestHeader("authorisation") String token,
@@ -66,7 +65,7 @@ public class WatchListController {
   }
 
   @DeleteMapping("/api/user/watchlist")
-  public ResponseEntity<Boolean> deleteWatchlist(
+  public ResponseEntity<Boolean> deleteWatchlistItem(
       @RequestParam int assetId,
       @RequestHeader("userId") UUID userId,
       @RequestHeader("authorisation") String token) {
@@ -81,7 +80,7 @@ public class WatchListController {
   }
 
   @PatchMapping(path = "/api/user/watchlist", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Boolean> updateWatchlist(
+  public ResponseEntity<Boolean> updateWatchlistItem(
       @RequestParam int assetId,
       @RequestHeader("userId") UUID userId,
       @RequestHeader("authorisation") @NonNull String token,

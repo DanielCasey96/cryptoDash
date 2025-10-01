@@ -5,6 +5,135 @@ info:
 servers:
   - url: http://localhost:8080
 paths:
+  /api/user/watchlist:
+    get:
+      summary: Get user's watchlist
+      parameters:
+        - name: fiat
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Fiat currency
+        - name: userId
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: User identifier
+        - name: authorisation
+          in: header
+          required: true
+          schema:
+            type: string
+          description: JWT token
+      responses:
+        '200':
+          description: List of watchlist items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WatchListItem'
+        '401':
+          description: Unauthorized
+      security:
+        - bearerAuth: []
+    post:
+      summary: Add item to watchlist
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Asset name
+        - name: userId
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: authorisation
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WatchListItem'
+      responses:
+        '200':
+          description: Item added
+        '401':
+          description: Unauthorized
+      security:
+        - bearerAuth: []
+    delete:
+      summary: Remove item from watchlist
+      parameters:
+        - name: assetId
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Asset identifier
+        - name: userId
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: authorisation
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Item removed
+        '401':
+          description: Unauthorized
+      security:
+        - bearerAuth: []
+    patch:
+      summary: Update item in watchlist
+      parameters:
+        - name: assetId
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Asset identifier
+        - name: userId
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: authorisation
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WatchListItem'
+      responses:
+        '200':
+          description: Item updated
+        '401':
+          description: Unauthorized
+      security:
+        - bearerAuth: []
   /api/markets/top:
     get:
       summary: Get top market items
@@ -65,6 +194,25 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    WatchListItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+        provider:
+          type: string
+        category:
+          type: string
+        value:
+          type: number
+          format: double
+        createdAt:
+          type: string
+          format: date-time
     MarketItem:
       type: object
       properties:
