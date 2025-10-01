@@ -57,7 +57,7 @@ public class WatchListController {
     return ResponseEntity.ok().build();
   }
 
-  @PatchMapping("/api/user/watchlist")
+  @PatchMapping(path = "/api/user/watchlist", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Boolean> updateWatchlist(
       @RequestParam int assetId,
       @RequestHeader("userId") UUID userId,

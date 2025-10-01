@@ -26,6 +26,8 @@ dependencies {
 //    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testImplementation 'io.rest-assured:rest-assured:5.4.0'
 
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     runtimeOnly("org.postgresql:postgresql")
@@ -39,4 +41,107 @@ spotless {
     java {
         googleJavaFormat()
     }
+}
+tasks.register('acceptanceTest', Test) {
+    outputs.upToDateWhen { false }
+
+    dependsOn dockerUp
+    dependsOn 'waitForApp'
+
+    testClassesDirs = sourceSets.acceptance.output.classesDirs
+    classpath = sourceSets.acceptance.runtimeClasspath
+
+    useJUnitPlatform{
+            description = 'Run local ATs';
+            testLogging.showStandardStreams = true;
+            }
+
+    reports {
+        html.required = true
+    }
+
+    afterSuite { desc, result ->
+        if (!desc.parent) {
+            println "\n Test Results: ${result.resultType}"
+            println "Test Summary: ${result.testCount} " +
+                    "${result.successfulTestCount} success: " +
+                    "${result.failedTestCount} failed: "
+        }
+    }
+
+    finalizedBy dockerDown
+}
+
+tasks.register('dockerUp') {
+    doLast {
+        exec {
+            commandLine 'docker', 'compose', 'up', '-d'
+        }
+    }
+}
+
+tasks.register('dockerDown') {
+    doLast {
+        exec {
+            commandLine 'docker', 'compose', 'down'
+        }
+    }
+}
+
+tasks.register('waitForApp') {
+    doLast {
+        def maxAttempts = 20
+        def attempt = 0
+        def url = 'http://localhost:8080/actuator/health'
+        while (attempt < maxAttempts) {
+            try {
+                def connection = new URL(url).openConnection()
+                connection.setConnectTimeout(1000)
+                connection.setReadTimeout(1000)
+                if (connection.responseCode == 200) {
+                    println "App is up!"
+                    break
+                }
+            } catch (Exception ignored) {}
+            attempt++
+            println "Waiting for app... ($attempt/$maxAttempts)"
+            sleep(1000)
+        }
+        if (attempt == maxAttempts) {
+            throw new GradleException("App did not start in time")
+        }
+    }
+}
+
+sourceSets {
+    acceptance {
+        java {
+            srcDir 'src/acceptance/java'
+        }
+        resources {
+            srcDir 'src/acceptance/resources'
+        }
+    }
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+        resources {
+            srcDir 'src/main/resources'
+        }
+    }
+    test {
+        java {
+            srcDir 'src/test/java'
+        }
+    }
+}
+
+configurations {
+    acceptanceImplementation.extendsFrom testImplementation
+    acceptanceRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
