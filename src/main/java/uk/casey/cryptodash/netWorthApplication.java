@@ -4,9 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CryptoDashApplication {
+public class netWorthApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(CryptoDashApplication.class, args);
+    SpringApplication.run(netWorthApplication.class, args);
   }
 }

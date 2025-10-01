@@ -55,8 +55,8 @@ spotless {
 tasks.register('acceptanceTest', Test) {
     outputs.upToDateWhen { false }
 
-//    dependsOn dockerUp
-//    dependsOn 'waitForApp'
+    dependsOn dockerUp
+    dependsOn 'waitForApp'
 
     testClassesDirs = sourceSets.acceptance.output.classesDirs
     classpath = sourceSets.acceptance.runtimeClasspath
@@ -79,7 +79,7 @@ tasks.register('acceptanceTest', Test) {
         }
     }
 
-//    finalizedBy dockerDown
+    finalizedBy dockerDown
 }
 
 tasks.register('dockerUp') {
