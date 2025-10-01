@@ -19,6 +19,11 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    acceptanceImplementation.extendsFrom implementation
+    acceptanceRuntimeOnly.extendsFrom runtimeOnly
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -28,6 +33,11 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
     testImplementation 'io.rest-assured:rest-assured:5.4.0'
+
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+    implementation 'org.mindrot:jbcrypt:0.4'
 
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     runtimeOnly("org.postgresql:postgresql")
@@ -45,8 +55,8 @@ spotless {
 tasks.register('acceptanceTest', Test) {
     outputs.upToDateWhen { false }
 
-    dependsOn dockerUp
-    dependsOn 'waitForApp'
+//    dependsOn dockerUp
+//    dependsOn 'waitForApp'
 
     testClassesDirs = sourceSets.acceptance.output.classesDirs
     classpath = sourceSets.acceptance.runtimeClasspath
@@ -69,13 +79,14 @@ tasks.register('acceptanceTest', Test) {
         }
     }
 
-    finalizedBy dockerDown
+//    finalizedBy dockerDown
 }
 
 tasks.register('dockerUp') {
+    dependsOn 'build'
     doLast {
         exec {
-            commandLine 'docker', 'compose', 'up', '-d'
+            commandLine 'docker', 'compose', 'up', '--build', '--force-recreate', '-d'
         }
     }
 }
@@ -121,6 +132,8 @@ sourceSets {
         resources {
             srcDir 'src/acceptance/resources'
         }
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
     }
     main {
         java {

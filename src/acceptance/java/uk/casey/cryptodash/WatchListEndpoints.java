@@ -2,14 +2,20 @@ package uk.casey.cryptodash;
 
 import static io.restassured.RestAssured.given;
 
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 public class WatchListEndpoints {
+
+  private String generateValidTestToken() {
+    return tokenUtil.generateToken(UUID.fromString("11111111-1111-1111-1111-111111111111"), "dave");
+  }
 
   @Test
   public void testGetWatchList() {
     given()
         .header("userId", "11111111-1111-1111-1111-111111111111")
+        .header("authorisation", generateValidTestToken())
         .when()
         .get("http://localhost:8080/api/user/watchlist?fiat=GBP")
         .then()
@@ -20,6 +26,7 @@ public class WatchListEndpoints {
   public void testPostWatchListItem() {
     given()
         .header("userId", "11111111-1111-1111-1111-111111111111")
+        .header("authorisation", generateValidTestToken())
         .header("content-Type", "application/json")
         .body(
             "{\n"
@@ -38,6 +45,7 @@ public class WatchListEndpoints {
   public void testDeleteWatchListItem() {
     given()
         .header("userId", "11111111-1111-1111-1111-111111111111")
+        .header("authorisation", generateValidTestToken())
         .when()
         .delete("http://localhost:8080/api/user/watchlist?assetId=2")
         .then()
@@ -48,6 +56,7 @@ public class WatchListEndpoints {
   public void testPatchWatchListItemValue() {
     given()
         .header("userId", "11111111-1111-1111-1111-111111111111")
+        .header("authorisation", generateValidTestToken())
         .header("content-Type", "application/json")
         .body("{ \n" + "    \"value\": 15.99\n" + "}")
         .when()
