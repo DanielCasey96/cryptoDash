@@ -17,7 +17,7 @@ public class CryptoMarketController {
 
   private static final Logger logger = LoggerFactory.getLogger(CryptoMarketController.class);
 
-  private CoinGeckoService coinGeckoService;
+  private final CoinGeckoService coinGeckoService;
   private final IJwtService jwtService;
 
   public CryptoMarketController(CoinGeckoService coinGeckoService, IJwtService jwtService) {
