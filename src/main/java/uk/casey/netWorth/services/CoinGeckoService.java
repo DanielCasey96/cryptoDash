@@ -3,22 +3,22 @@ package uk.casey.netWorth.services;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import uk.casey.netWorth.models.CoinGeckoResponseModel;
-import uk.casey.netWorth.services.providers.CoinGeckoProvider;
+import uk.casey.netWorth.services.providers.IMarketDataProvider;
 
 @Service
 public class CoinGeckoService {
 
-  private final CoinGeckoProvider coinGeckoProvider;
+  private final IMarketDataProvider provider;
 
-  public CoinGeckoService(CoinGeckoProvider coinGeckoProvider) {
-    this.coinGeckoProvider = coinGeckoProvider;
+  public CoinGeckoService(IMarketDataProvider provider) {
+    this.provider = provider;
   }
 
   public List<CoinGeckoResponseModel> getMarketList(String vsCurrency) {
-    return coinGeckoProvider.getMarketList(vsCurrency);
+    return provider.getMarketList(vsCurrency);
   }
 
   public CoinGeckoResponseModel getItem(String itemId, String vsCurrency) {
-    return coinGeckoProvider.getItem(itemId, vsCurrency);
+    return provider.getItem(itemId, vsCurrency);
   }
 }

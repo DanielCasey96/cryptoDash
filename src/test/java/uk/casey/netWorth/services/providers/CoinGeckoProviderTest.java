@@ -31,7 +31,6 @@ public class CoinGeckoProviderTest {
 
   @Test
   void getMarketList_returnsSuccess() throws Exception {
-    CoinGeckoResponseModel[] mockResponse = {new CoinGeckoResponseModel()};
     when(restTemplate.getForObject(anyString(), eq(CoinGeckoResponseModel[].class)))
         .thenReturn(new CoinGeckoResponseModel[] {new CoinGeckoResponseModel()});
 
@@ -59,7 +58,6 @@ public class CoinGeckoProviderTest {
 
   @Test
   void getItem_returnsSuccess() throws Exception {
-    CoinGeckoResponseModel[] mockResponse = {new CoinGeckoResponseModel()};
     when(restTemplate.getForObject(anyString(), eq(CoinGeckoResponseModel[].class)))
         .thenReturn(new CoinGeckoResponseModel[] {new CoinGeckoResponseModel()});
 

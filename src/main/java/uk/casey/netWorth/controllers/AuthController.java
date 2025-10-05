@@ -24,8 +24,7 @@ public class AuthController {
   }
 
   @PostMapping(path = "/api/user/register", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String> registerUser(@RequestBody RegistrationRequestModel rq)
-      throws SQLException {
+  public ResponseEntity<String> registerUser(@RequestBody RegistrationRequestModel rq) {
 
     String userId = usersService.registerUser(rq.getUsername(), rq.getPassword(), rq.getEmail());
 

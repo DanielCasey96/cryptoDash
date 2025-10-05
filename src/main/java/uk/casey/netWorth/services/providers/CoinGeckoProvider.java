@@ -8,7 +8,7 @@ import uk.casey.netWorth.config.CoinGeckoProperties;
 import uk.casey.netWorth.models.CoinGeckoResponseModel;
 
 @Component
-public class CoinGeckoProvider {
+public class CoinGeckoProvider implements IMarketDataProvider {
 
   private final RestTemplate restTemplate;
   private final String baseUrl;
@@ -18,6 +18,7 @@ public class CoinGeckoProvider {
     this.baseUrl = cgProps.getBaseUrl();
   }
 
+  @Override
   public List<CoinGeckoResponseModel> getMarketList(String vsCurrency) {
     String fullUrl = baseUrl + "/coins/markets";
     String url =
@@ -31,6 +32,7 @@ public class CoinGeckoProvider {
     return Arrays.asList(response);
   }
 
+  @Override
   public CoinGeckoResponseModel getItem(String itemId, String vsCurrency) {
     String fullUrl = baseUrl + "/coins/markets";
     String url =
