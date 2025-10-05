@@ -2,17 +2,16 @@ package uk.casey.netWorth;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -21,33 +20,31 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.server.ResponseStatusException;
 import uk.casey.netWorth.controllers.CryptoMarketController;
 import uk.casey.netWorth.models.CoinGeckoResponseModel;
 import uk.casey.netWorth.services.CoinGeckoService;
-import uk.casey.netWorth.utils.JwtUtil;
+import uk.casey.netWorth.utils.IJwtService;
 
 @WebMvcTest(CryptoMarketController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 class CryptoMarketControllerIntegrationTest {
 
+  private final String TOKEN =
+      "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0MTEyMGFiZi0zMzlkLTQ2MjctODE4OC0xZTI0ZTc3NTk0NzUiLCJ1c2VybmFtZSI6ImNhc2V5MmJvb2dhbG9vIiwiaWF0IjoxNzU3NzA5NzQ5LCJleHAiOjE3NTc3MDk4Njl9.03sPM5GMx0y0SI0H133ng4EhPdCqjDgv6loU-Q-zVqU";
+
   @Autowired private MockMvc mockMvc;
+
+  @MockitoBean private IJwtService jwtService;
 
   @Autowired FakeCoinGeckoConfig.FakeCoinGeckoService fakeService;
 
-  private MockedStatic<JwtUtil> jwtMock;
-
   @BeforeEach
-  void setUpJwt() {
-    jwtMock = Mockito.mockStatic(JwtUtil.class);
-    jwtMock.when(() -> JwtUtil.isValidJwtFormat(Mockito.anyString())).thenReturn(true);
-  }
-
-  @AfterEach
-  void tearDownJwt() {
-    if (jwtMock != null) jwtMock.close();
+  void setUp() {
+    when(jwtService.validateToken(anyString())).thenReturn(true);
   }
 
   @Test
@@ -59,9 +56,7 @@ class CryptoMarketControllerIntegrationTest {
             get("/api/markets/top")
                 .param("limit", "10")
                 .param("fiat", "GBP")
-                .header(
-                    "Authorisation",
-                    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0MTEyMGFiZi0zMzlkLTQ2MjctODE4OC0xZTI0ZTc3NTk0NzUiLCJ1c2VybmFtZSI6ImNhc2V5MmJvb2dhbG9vIiwiaWF0IjoxNzU3NzA5NzQ5LCJleHAiOjE3NTc3MDk4Njl9.03sPM5GMx0y0SI0H133ng4EhPdCqjDgv6loU-Q-zVqU"))
+                .header("Authorisation", TOKEN))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(1)));
   }
@@ -75,9 +70,7 @@ class CryptoMarketControllerIntegrationTest {
             get("/api/markets/top")
                 .param("limit", "10")
                 .param("fiat", "GBP")
-                .header(
-                    "Authorisation",
-                    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0MTEyMGFiZi0zMzlkLTQ2MjctODE4OC0xZTI0ZTc3NTk0NzUiLCJ1c2VybmFtZSI6ImNhc2V5MmJvb2dhbG9vIiwiaWF0IjoxNzU3NzA5NzQ5LCJleHAiOjE3NTc3MDk4Njl9.03sPM5GMx0y0SI0H133ng4EhPdCqjDgv6loU-Q-zVqU"))
+                .header("Authorisation", TOKEN))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(0)));
   }
@@ -87,11 +80,7 @@ class CryptoMarketControllerIntegrationTest {
     fakeService.setMarketList(List.of(new CoinGeckoResponseModel()));
 
     mockMvc
-        .perform(
-            get("/api/markets/top")
-                .header(
-                    "Authorisation",
-                    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0MTEyMGFiZi0zMzlkLTQ2MjctODE4OC0xZTI0ZTc3NTk0NzUiLCJ1c2VybmFtZSI6ImNhc2V5MmJvb2dhbG9vIiwiaWF0IjoxNzU3NzA5NzQ5LCJleHAiOjE3NTc3MDk4Njl9.03sPM5GMx0y0SI0H133ng4EhPdCqjDgv6loU-Q-zVqU"))
+        .perform(get("/api/markets/top").header("Authorisation", TOKEN))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(1)));
   }
@@ -105,9 +94,7 @@ class CryptoMarketControllerIntegrationTest {
             get("/api/markets/top")
                 .param("limit", "10")
                 .param("fiat", "USD")
-                .header(
-                    "Authorisation",
-                    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0MTEyMGFiZi0zMzlkLTQ2MjctODE4OC0xZTI0ZTc3NTk0NzUiLCJ1c2VybmFtZSI6ImNhc2V5MmJvb2dhbG9vIiwiaWF0IjoxNzU3NzA5NzQ5LCJleHAiOjE3NTc3MDk4Njl9.03sPM5GMx0y0SI0H133ng4EhPdCqjDgv6loU-Q-zVqU"))
+                .header("Authorisation", TOKEN))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(1)));
     assertEquals("USD", fakeService.getLastFiat());
@@ -122,9 +109,7 @@ class CryptoMarketControllerIntegrationTest {
             get("/api/markets/topOfThePops")
                 .param("limit", "10")
                 .param("fiat", "GBP")
-                .header(
-                    "Authorisation",
-                    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0MTEyMGFiZi0zMzlkLTQ2MjctODE4OC0xZTI0ZTc3NTk0NzUiLCJ1c2VybmFtZSI6ImNhc2V5MmJvb2dhbG9vIiwiaWF0IjoxNzU3NzA5NzQ5LCJleHAiOjE3NTc3MDk4Njl9.03sPM5GMx0y0SI0H133ng4EhPdCqjDgv6loU-Q-zVqU"))
+                .header("Authorisation", TOKEN))
         .andExpect(status().isNotFound());
   }
 
@@ -138,9 +123,7 @@ class CryptoMarketControllerIntegrationTest {
               get("/api/markets/top")
                   .param("limit", "10")
                   .param("fiat", "GBP")
-                  .header(
-                      "Authorisation",
-                      "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0MTEyMGFiZi0zMzlkLTQ2MjctODE4OC0xZTI0ZTc3NTk0NzUiLCJ1c2VybmFtZSI6ImNhc2V5MmJvb2dhbG9vIiwiaWF0IjoxNzU3NzA5NzQ5LCJleHAiOjE3NTc3MDk4Njl9.03sPM5GMx0y0SI0H133ng4EhPdCqjDgv6loU-Q-zVqU"))
+                  .header("Authorisation", TOKEN))
           .andExpect(status().is5xxServerError());
     } finally {
       fakeService.setThrowError(false);

@@ -1,6 +1,8 @@
 package uk.casey.netWorth.controllers;
 
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -8,14 +10,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.casey.netWorth.models.CoinGeckoResponseModel;
 import uk.casey.netWorth.services.CoinGeckoService;
-import uk.casey.netWorth.utils.JwtUtil;
+import uk.casey.netWorth.utils.IJwtService;
 
 @RestController
 public class CryptoMarketController {
-  private CoinGeckoService coinGeckoService;
 
-  public CryptoMarketController(CoinGeckoService coinGeckoService) {
+  private static final Logger logger = LoggerFactory.getLogger(CryptoMarketController.class);
+
+  private CoinGeckoService coinGeckoService;
+  private final IJwtService jwtService;
+
+  public CryptoMarketController(CoinGeckoService coinGeckoService, IJwtService jwtService) {
     this.coinGeckoService = coinGeckoService;
+    this.jwtService = jwtService;
+  }
+
+  private boolean unauthorised(String token) {
+    return token == null || token.isEmpty() || !jwtService.validateToken(token);
   }
 
   @GetMapping("/api/markets/top")
@@ -24,9 +35,8 @@ public class CryptoMarketController {
       @RequestParam(defaultValue = "GBP") String fiat,
       @RequestHeader("authorisation") String token) {
 
-    if (!JwtUtil.isValidJwtFormat(token)) {
-      return ResponseEntity.status(401).build();
-    }
+    if (unauthorised(token)) return ResponseEntity.status(401).build();
+    logger.info("JWT format is valid, proceeding with request");
 
     List<CoinGeckoResponseModel> marketList = coinGeckoService.getMarketList(fiat);
 
@@ -39,9 +49,8 @@ public class CryptoMarketController {
       @RequestParam("fiat") String fiat,
       @RequestHeader("authorisation") String token) {
 
-    if (!JwtUtil.isValidJwtFormat(token)) {
-      return ResponseEntity.status(401).build();
-    }
+    if (unauthorised(token)) return ResponseEntity.status(401).build();
+    logger.info("JWT format is valid, proceeding with request");
 
     CoinGeckoResponseModel item = coinGeckoService.getItem(assetId, fiat);
 

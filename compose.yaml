@@ -32,6 +32,9 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_PROFILES_ACTIVE: docker
+#      //TODO change this to local when wiremock implemented
+      SECURITY_JWT_SECRET: "TEST_PROFILE_STATIC_SECRET_32B_MIN_LEN_123456"
+      SECURITY_JWT_TTL_SECONDS: 900
     ports:
       - "8080:8080"
 

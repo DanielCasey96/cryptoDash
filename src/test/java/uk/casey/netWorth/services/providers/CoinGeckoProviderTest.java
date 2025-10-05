@@ -17,12 +17,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import uk.casey.netWorth.config.CoinGeckoProperties;
 import uk.casey.netWorth.models.CoinGeckoResponseModel;
 
 @ExtendWith(MockitoExtension.class)
 public class CoinGeckoProviderTest {
 
   @Mock private RestTemplate restTemplate;
+
+  @Mock private CoinGeckoProperties coinGeckoProperties;
 
   @InjectMocks private CoinGeckoProvider coinGeckoProvider;
 

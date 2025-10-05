@@ -13,27 +13,31 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 import uk.casey.netWorth.models.WatchListItemModel;
 import uk.casey.netWorth.services.WatchListService;
-import uk.casey.netWorth.utils.JwtUtil;
+import uk.casey.netWorth.utils.IJwtService;
 
 @RestController
 public class WatchListController {
 
-  private final WatchListService watchListService;
+  private static final Logger logger = LoggerFactory.getLogger(WatchListController.class);
 
-  public WatchListController(WatchListService watchListService) {
+  private final WatchListService watchListService;
+  private final IJwtService jwtService;
+
+  public WatchListController(WatchListService watchListService, IJwtService jwtService) {
     this.watchListService = watchListService;
+    this.jwtService = jwtService;
   }
 
-  private static final Logger logger = LoggerFactory.getLogger(WatchListController.class);
+  private boolean unauthorised(String token) {
+    return token == null || token.isEmpty() || !jwtService.validateToken(token);
+  }
 
   @GetMapping("/api/user/watchlist")
   public ResponseEntity<List<WatchListItemModel>> getWatchList(
       @RequestHeader("userId") UUID userId, @RequestHeader("authorisation") String token) {
     logger.info("Received request with userId: {} and token: {}", userId, token);
 
-    if (!JwtUtil.isValidJwtFormat(token)) {
-      return ResponseEntity.status(401).build();
-    }
+    if (unauthorised(token)) return ResponseEntity.status(401).build();
     logger.info("JWT format is valid, proceeding with request");
 
     List<WatchListItemModel> watchlist = watchListService.getWatchList(userId);
@@ -48,10 +52,10 @@ public class WatchListController {
       @RequestHeader("authorisation") String token,
       @RequestBody WatchListItemModel req)
       throws SQLException {
+    logger.info("Received request with userId: {} and token: {}", userId, token);
 
-    if (!JwtUtil.isValidJwtFormat(token)) {
-      return ResponseEntity.status(401).build();
-    }
+    if (unauthorised(token)) return ResponseEntity.status(401).build();
+    logger.info("JWT format is valid, proceeding with request");
 
     watchListService.addToWatchlist(
         userId,
@@ -70,10 +74,10 @@ public class WatchListController {
       @RequestParam int assetId,
       @RequestHeader("userId") UUID userId,
       @RequestHeader("authorisation") String token) {
+    logger.info("Received request with userId: {} and token: {}", userId, token);
 
-    if (!JwtUtil.isValidJwtFormat(token)) {
-      return ResponseEntity.status(401).build();
-    }
+    if (unauthorised(token)) return ResponseEntity.status(401).build();
+    logger.info("JWT format is valid, proceeding with request");
 
     watchListService.deleteFromWatchlist(userId, assetId);
 
@@ -86,10 +90,10 @@ public class WatchListController {
       @RequestHeader("userId") UUID userId,
       @RequestHeader("authorisation") @NonNull String token,
       @RequestBody WatchListItemModel req) {
+    logger.info("Received request with userId: {} and token: {}", userId, token);
 
-    if (!JwtUtil.isValidJwtFormat(token)) {
-      return ResponseEntity.status(401).build();
-    }
+    if (unauthorised(token)) return ResponseEntity.status(401).build();
+    logger.info("JWT format is valid, proceeding with request");
 
     watchListService.updateItemWatchList(userId, assetId, req.getValue());
 

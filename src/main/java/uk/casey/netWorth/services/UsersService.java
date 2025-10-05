@@ -6,15 +6,17 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 import uk.casey.netWorth.exceptions.AuthenticationException;
 import uk.casey.netWorth.services.providers.DataBaseProvider;
-import uk.casey.netWorth.utils.JwtUtil;
+import uk.casey.netWorth.utils.IJwtService;
 
 @Component
 public class UsersService {
 
   private final DataBaseProvider dataBaseProvider;
+  private final IJwtService jwtService;
 
-  public UsersService(DataBaseProvider dataBaseProvider) {
+  public UsersService(DataBaseProvider dataBaseProvider, IJwtService jwtService) {
     this.dataBaseProvider = dataBaseProvider;
+    this.jwtService = jwtService;
   }
 
   public String registerUser(String username, String password, String email) {
@@ -26,6 +28,6 @@ public class UsersService {
     String dbPassword = dataBaseProvider.checkPassword(userId, username);
     if (!BCrypt.checkpw(password, dbPassword))
       throw new AuthenticationException("Invalid Credentials");
-    return JwtUtil.generateToken(userId, username);
+    return jwtService.generateToken(userId, username);
   }
 }

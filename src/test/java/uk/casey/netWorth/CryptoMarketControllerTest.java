@@ -1,6 +1,7 @@
 package uk.casey.netWorth;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -9,11 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -22,27 +20,24 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.casey.netWorth.controllers.CryptoMarketController;
 import uk.casey.netWorth.models.CoinGeckoResponseModel;
 import uk.casey.netWorth.services.CoinGeckoService;
-import uk.casey.netWorth.utils.JwtUtil;
+import uk.casey.netWorth.utils.IJwtService;
 
 @WebMvcTest(CryptoMarketController.class)
 @AutoConfigureMockMvc(addFilters = false)
 public class CryptoMarketControllerTest {
 
+  private final String TOKEN =
+      "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0MTEyMGFiZi0zMzlkLTQ2MjctODE4OC0xZTI0ZTc3NTk0NzUiLCJ1c2VybmFtZSI6ImNhc2V5MmJvb2dhbG9vIiwiaWF0IjoxNzU3NzA5NzQ5LCJleHAiOjE3NTc3MDk4Njl9.03sPM5GMx0y0SI0H133ng4EhPdCqjDgv6loU-Q-zVqU";
+
   @Autowired private MockMvc mockMvc;
 
   @MockitoBean private CoinGeckoService coinGeckoService;
 
-  private MockedStatic<JwtUtil> jwtMock;
+  @MockitoBean private IJwtService jwtService;
 
   @BeforeEach
   void setUpJwt() {
-    jwtMock = Mockito.mockStatic(JwtUtil.class);
-    jwtMock.when(() -> JwtUtil.isValidJwtFormat(Mockito.anyString())).thenReturn(true);
-  }
-
-  @AfterEach
-  void tearDownJwt() {
-    if (jwtMock != null) jwtMock.close();
+    when(jwtService.validateToken(anyString())).thenReturn(true);
   }
 
   @Test
@@ -65,9 +60,7 @@ public class CryptoMarketControllerTest {
             get("/api/markets/top")
                 .param("limit", "10")
                 .param("fiat", "GBP")
-                .header(
-                    "Authorisation",
-                    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0MTEyMGFiZi0zMzlkLTQ2MjctODE4OC0xZTI0ZTc3NTk0NzUiLCJ1c2VybmFtZSI6ImNhc2V5MmJvb2dhbG9vIiwiaWF0IjoxNzU3NzA5NzQ5LCJleHAiOjE3NTc3MDk4Njl9.03sPM5GMx0y0SI0H133ng4EhPdCqjDgv6loU-Q-zVqU"))
+                .header("Authorisation", TOKEN))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(1)));
   }
