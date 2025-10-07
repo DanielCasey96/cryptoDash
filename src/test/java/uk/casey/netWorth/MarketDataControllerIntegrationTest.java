@@ -23,15 +23,15 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.server.ResponseStatusException;
-import uk.casey.netWorth.controllers.CryptoMarketController;
+import uk.casey.netWorth.controllers.MarketDataController;
 import uk.casey.netWorth.models.CoinGeckoResponseModel;
-import uk.casey.netWorth.services.CoinGeckoService;
+import uk.casey.netWorth.services.MarketDataService;
 import uk.casey.netWorth.utils.IJwtService;
 
-@WebMvcTest(CryptoMarketController.class)
+@WebMvcTest(MarketDataController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
-class CryptoMarketControllerIntegrationTest {
+class MarketDataControllerIntegrationTest {
 
   private final String TOKEN =
       "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0MTEyMGFiZi0zMzlkLTQ2MjctODE4OC0xZTI0ZTc3NTk0NzUiLCJ1c2VybmFtZSI6ImNhc2V5MmJvb2dhbG9vIiwiaWF0IjoxNzU3NzA5NzQ5LCJleHAiOjE3NTc3MDk4Njl9.03sPM5GMx0y0SI0H133ng4EhPdCqjDgv6loU-Q-zVqU";
@@ -40,7 +40,7 @@ class CryptoMarketControllerIntegrationTest {
 
   @MockitoBean private IJwtService jwtService;
 
-  @Autowired FakeCoinGeckoConfig.FakeCoinGeckoService fakeService;
+  @Autowired FakeCoinGeckoConfig.FakeMarketDataService fakeService;
 
   @BeforeEach
   void setUp() {
@@ -134,16 +134,16 @@ class CryptoMarketControllerIntegrationTest {
   static class FakeCoinGeckoConfig {
     @Bean
     @Primary
-    FakeCoinGeckoService fakeCoinGeckoService() {
-      return new FakeCoinGeckoService();
+    FakeMarketDataService fakeCoinGeckoService() {
+      return new FakeMarketDataService();
     }
 
-    static class FakeCoinGeckoService extends CoinGeckoService {
+    static class FakeMarketDataService extends MarketDataService {
       private String lastFiat;
       private boolean throwError = false;
       private List<CoinGeckoResponseModel> marketList = List.of(new CoinGeckoResponseModel());
 
-      FakeCoinGeckoService() {
+      FakeMarketDataService() {
         super(null);
       }
 

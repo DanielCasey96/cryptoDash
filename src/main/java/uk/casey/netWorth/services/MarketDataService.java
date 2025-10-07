@@ -6,11 +6,11 @@ import uk.casey.netWorth.models.CoinGeckoResponseModel;
 import uk.casey.netWorth.services.providers.IMarketDataProvider;
 
 @Service
-public class CoinGeckoService {
+public class MarketDataService {
 
   private final IMarketDataProvider provider;
 
-  public CoinGeckoService(IMarketDataProvider provider) {
+  public MarketDataService(IMarketDataProvider provider) {
     this.provider = provider;
   }
 

@@ -14,12 +14,12 @@ import uk.casey.netWorth.models.RegistrationRequestModel;
 import uk.casey.netWorth.services.UsersService;
 
 @RestController
-public class AuthController {
+public class UsersController {
 
   private UsersService usersService;
 
   @Autowired
-  public AuthController(UsersService usersService) {
+  public UsersController(UsersService usersService) {
     this.usersService = usersService;
   }
 

@@ -34,7 +34,8 @@ public class WatchListController {
 
   @GetMapping("/api/user/watchlist")
   public ResponseEntity<List<WatchListItemModel>> getWatchList(
-      @RequestHeader("userId") UUID userId, @RequestHeader("authorisation") String token) {
+      @RequestHeader("userId") UUID userId, @RequestHeader("authorisation") String token)
+      throws SQLException {
     logger.info("Received request with userId: {} and token: {}", userId, token);
 
     if (unauthorised(token)) return ResponseEntity.status(401).build();
@@ -73,7 +74,8 @@ public class WatchListController {
   public ResponseEntity<Boolean> deleteWatchlistItem(
       @RequestParam int assetId,
       @RequestHeader("userId") UUID userId,
-      @RequestHeader("authorisation") String token) {
+      @RequestHeader("authorisation") String token)
+      throws SQLException {
     logger.info("Received request with userId: {} and token: {}", userId, token);
 
     if (unauthorised(token)) return ResponseEntity.status(401).build();
@@ -89,7 +91,8 @@ public class WatchListController {
       @RequestParam int assetId,
       @RequestHeader("userId") UUID userId,
       @RequestHeader("authorisation") @NonNull String token,
-      @RequestBody WatchListItemModel req) {
+      @RequestBody WatchListItemModel req)
+      throws SQLException {
     logger.info("Received request with userId: {} and token: {}", userId, token);
 
     if (unauthorised(token)) return ResponseEntity.status(401).build();

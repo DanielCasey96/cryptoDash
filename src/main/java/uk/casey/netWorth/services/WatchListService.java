@@ -7,20 +7,19 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import uk.casey.netWorth.models.WatchListItemModel;
-import uk.casey.netWorth.services.providers.DataBaseProvider;
+import uk.casey.netWorth.services.providers.IDataBaseProvider;
 
 @Service
 public class WatchListService {
 
-  private final DataBaseProvider dataBaseProvider;
+  private final IDataBaseProvider postGresProvider;
 
-  public WatchListService(DataBaseProvider dataBaseProvider) {
-    this.dataBaseProvider = dataBaseProvider;
+  public WatchListService(IDataBaseProvider postGresProvider) {
+    this.postGresProvider = postGresProvider;
   }
 
-  public List<WatchListItemModel> getWatchList(UUID userId) {
-
-    return dataBaseProvider.getWatchList(userId);
+  public List<WatchListItemModel> getWatchList(UUID userId) throws SQLException {
+    return postGresProvider.getWatchList(userId);
   }
 
   public boolean addToWatchlist(
@@ -32,14 +31,15 @@ public class WatchListService {
       BigDecimal value,
       Timestamp updated_at)
       throws SQLException {
-    return dataBaseProvider.createItem(userId, name, type, provider, category, value, updated_at);
+    return postGresProvider.createItem(userId, name, type, provider, category, value, updated_at);
   }
 
-  public boolean deleteFromWatchlist(UUID userId, int assetId) {
-    return dataBaseProvider.deleteItem(userId, assetId);
+  public boolean deleteFromWatchlist(UUID userId, int assetId) throws SQLException {
+    return postGresProvider.deleteItem(userId, assetId);
   }
 
-  public boolean updateItemWatchList(UUID userId, int assetId, BigDecimal value) {
-    return dataBaseProvider.updateItem(userId, assetId, value);
+  public boolean updateItemWatchList(UUID userId, int assetId, BigDecimal value)
+      throws SQLException {
+    return postGresProvider.updateItem(userId, assetId, value);
   }
 }

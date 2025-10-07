@@ -9,19 +9,19 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.casey.netWorth.models.CoinGeckoResponseModel;
-import uk.casey.netWorth.services.CoinGeckoService;
+import uk.casey.netWorth.services.MarketDataService;
 import uk.casey.netWorth.utils.IJwtService;
 
 @RestController
-public class CryptoMarketController {
+public class MarketDataController {
 
-  private static final Logger logger = LoggerFactory.getLogger(CryptoMarketController.class);
+  private static final Logger logger = LoggerFactory.getLogger(MarketDataController.class);
 
-  private final CoinGeckoService coinGeckoService;
+  private final MarketDataService marketDataService;
   private final IJwtService jwtService;
 
-  public CryptoMarketController(CoinGeckoService coinGeckoService, IJwtService jwtService) {
-    this.coinGeckoService = coinGeckoService;
+  public MarketDataController(MarketDataService marketDataService, IJwtService jwtService) {
+    this.marketDataService = marketDataService;
     this.jwtService = jwtService;
   }
 
@@ -38,7 +38,7 @@ public class CryptoMarketController {
     if (unauthorised(token)) return ResponseEntity.status(401).build();
     logger.info("JWT format is valid, proceeding with request");
 
-    List<CoinGeckoResponseModel> marketList = coinGeckoService.getMarketList(fiat);
+    List<CoinGeckoResponseModel> marketList = marketDataService.getMarketList(fiat);
 
     return ResponseEntity.ok(marketList);
   }
@@ -52,7 +52,7 @@ public class CryptoMarketController {
     if (unauthorised(token)) return ResponseEntity.status(401).build();
     logger.info("JWT format is valid, proceeding with request");
 
-    CoinGeckoResponseModel item = coinGeckoService.getItem(assetId, fiat);
+    CoinGeckoResponseModel item = marketDataService.getItem(assetId, fiat);
 
     return ResponseEntity.ok(item);
   }

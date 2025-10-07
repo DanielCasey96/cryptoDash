@@ -13,18 +13,18 @@ import uk.casey.netWorth.models.CoinGeckoResponseModel;
 import uk.casey.netWorth.services.providers.IMarketDataProvider;
 
 @ExtendWith(MockitoExtension.class)
-public class CoinGeckoServiceTest {
+public class MarketDataServiceTest {
 
   @Mock private IMarketDataProvider mockMarketDataProvider;
 
-  @InjectMocks protected CoinGeckoService coinGeckoService;
+  @InjectMocks protected MarketDataService marketDataService;
 
   @Test
   void getMarketListReturnsSuccess() {
     when(mockMarketDataProvider.getMarketList("GBP"))
         .thenReturn(List.of(new CoinGeckoResponseModel()));
 
-    List<CoinGeckoResponseModel> result = coinGeckoService.getMarketList("GBP");
+    List<CoinGeckoResponseModel> result = marketDataService.getMarketList("GBP");
     assertNotNull(result);
   }
 
@@ -32,7 +32,7 @@ public class CoinGeckoServiceTest {
   void getMarketItemReturnsSuccess() {
     when(mockMarketDataProvider.getItem("bitcoin", "GBP")).thenReturn(new CoinGeckoResponseModel());
 
-    CoinGeckoResponseModel result = coinGeckoService.getItem("bitcoin", "GBP");
+    CoinGeckoResponseModel result = marketDataService.getItem("bitcoin", "GBP");
     assertNotNull(result);
   }
 }

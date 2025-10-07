@@ -10,15 +10,16 @@ import org.springframework.stereotype.Component;
 import uk.casey.netWorth.models.WatchListItemModel;
 
 @Component
-public class DataBaseProvider {
+public class PostGresProvider implements IDataBaseProvider {
 
   private final DataSource dataSource;
 
-  public DataBaseProvider(DataSource dataSource) {
+  public PostGresProvider(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
-  public List<WatchListItemModel> getWatchList(UUID userId) {
+  @Override
+  public List<WatchListItemModel> getWatchList(UUID userId) throws SQLException {
 
     String sql =
         "SELECT id, name, type, provider, category, value, updated_at "
@@ -44,11 +45,12 @@ public class DataBaseProvider {
         }
       }
       return watchList;
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
+    } catch (SQLException ex) {
+      throw new SQLException("Failed to retrieve list", ex);
     }
   }
 
+  @Override
   public boolean createItem(
       UUID userId,
       String name,
@@ -77,12 +79,13 @@ public class DataBaseProvider {
       int rowsCreated = statement.executeUpdate();
       return rowsCreated > 0;
     } catch (SQLException ex) {
-      throw new SQLException(ex.getMessage());
+      throw new SQLException("Failed to create product", ex);
     }
     // TODO return id
   }
 
-  public boolean deleteItem(UUID userId, int assetId) {
+  @Override
+  public boolean deleteItem(UUID userId, int assetId) throws SQLException {
 
     String sql = "DELETE FROM products WHERE user_id = ? AND id = ?";
 
@@ -94,12 +97,13 @@ public class DataBaseProvider {
 
       int rowsRemoved = statement.executeUpdate();
       return rowsRemoved > 0;
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
+    } catch (SQLException ex) {
+      throw new SQLException("Failed to delete product", ex);
     }
   }
 
-  public boolean updateItem(UUID userId, int assetId, BigDecimal value) {
+  @Override
+  public boolean updateItem(UUID userId, int assetId, BigDecimal value) throws SQLException {
 
     String sql = "UPDATE products SET value = ? WHERE user_id = ? AND id = ?";
 
@@ -111,12 +115,13 @@ public class DataBaseProvider {
 
       int rowsUpdated = statement.executeUpdate();
       return rowsUpdated > 0;
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
+    } catch (SQLException ex) {
+      throw new SQLException("Failed to update item", ex);
     }
     // TODO return value
   }
 
+  @Override
   public String registerUser(String username, String hashedPassword, String email) {
     String sql = "INSERT INTO users (username, password, email) VALUES (?, ?, ?) RETURNING id";
 
@@ -138,6 +143,7 @@ public class DataBaseProvider {
     }
   }
 
+  @Override
   public String checkPassword(UUID userId, String username) throws SQLException {
     String sql = "SELECT password FROM users WHERE id = ? AND username = ?";
 
