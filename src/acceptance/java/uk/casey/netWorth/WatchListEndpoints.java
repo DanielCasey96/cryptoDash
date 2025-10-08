@@ -17,7 +17,6 @@ public class WatchListEndpoints {
         .header("userId", "11111111-1111-1111-1111-111111111111")
         .header("authorisation", generateValidTestToken())
         .header("content-Type", "application/json")
-        .when()
         .get("http://localhost:8080/api/user/watchlist?fiat=GBP")
         .then()
         .statusCode(200);
@@ -36,7 +35,6 @@ public class WatchListEndpoints {
                 + "    \"category\": \"chillin\",\n"
                 + "    \"value\": 125.78\n"
                 + "}")
-        .when()
         .post("http://localhost:8080/api/user/watchlist?name=bitcoin")
         .then()
         .statusCode(200);
@@ -48,7 +46,6 @@ public class WatchListEndpoints {
         .header("userId", "11111111-1111-1111-1111-111111111111")
         .header("authorisation", generateValidTestToken())
         .header("content-Type", "application/json")
-        .when()
         .delete("http://localhost:8080/api/user/watchlist?assetId=2")
         .then()
         .statusCode(200);
@@ -61,7 +58,6 @@ public class WatchListEndpoints {
         .header("authorisation", generateValidTestToken())
         .header("content-Type", "application/json")
         .body("{ \n" + "    \"value\": 15.99\n" + "}")
-        .when()
         .patch("http://localhost:8080/api/user/watchlist?assetId=2")
         .then()
         .statusCode(200);

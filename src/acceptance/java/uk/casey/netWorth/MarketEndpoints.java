@@ -14,7 +14,6 @@ public class MarketEndpoints {
   @Test
   // Currently runs to live API Coin Gecko
   public void testGetTop10() {
-
     given()
         .header("authorisation", generateValidTestToken())
         .get("http://localhost:8080/api/markets/top")
