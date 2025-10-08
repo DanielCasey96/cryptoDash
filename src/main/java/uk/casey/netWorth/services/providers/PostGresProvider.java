@@ -6,12 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.sql.DataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import uk.casey.netWorth.models.WatchListItemModel;
 
 @Component
 public class PostGresProvider implements IDataBaseProvider {
 
+  private static final Logger logger = LoggerFactory.getLogger(PostGresProvider.class);
   private final DataSource dataSource;
 
   public PostGresProvider(DataSource dataSource) {
@@ -24,6 +27,8 @@ public class PostGresProvider implements IDataBaseProvider {
     String sql =
         "SELECT id, name, type, provider, category, value, updated_at "
             + "FROM products WHERE user_id = ?";
+
+    logger.info("Attempting to retrieve watch list from DB");
 
     try (Connection conn = dataSource.getConnection();
         PreparedStatement statement = conn.prepareStatement(sql)) {
@@ -65,6 +70,8 @@ public class PostGresProvider implements IDataBaseProvider {
         "INSERT INTO products (user_id, name, type, provider, category, value, updated_at) "
             + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
+    logger.info("Attempting to Create item in DB");
+
     try (Connection conn = dataSource.getConnection();
         PreparedStatement statement = conn.prepareStatement(sql)) {
 
@@ -89,6 +96,8 @@ public class PostGresProvider implements IDataBaseProvider {
 
     String sql = "DELETE FROM products WHERE user_id = ? AND id = ?";
 
+    logger.info("Attempting to delete item from DB");
+
     try (Connection conn = dataSource.getConnection();
         PreparedStatement statement = conn.prepareStatement(sql)) {
 
@@ -106,6 +115,8 @@ public class PostGresProvider implements IDataBaseProvider {
   public boolean updateItem(UUID userId, int assetId, BigDecimal value) throws SQLException {
 
     String sql = "UPDATE products SET value = ? WHERE user_id = ? AND id = ?";
+
+    logger.info("Attempting to update item in DB");
 
     try (Connection conn = dataSource.getConnection();
         PreparedStatement statement = conn.prepareStatement(sql)) {
@@ -125,6 +136,8 @@ public class PostGresProvider implements IDataBaseProvider {
   public String registerUser(String username, String hashedPassword, String email)
       throws SQLException {
     String sql = "INSERT INTO users (username, password, email) VALUES (?, ?, ?) RETURNING id";
+
+    logger.info("Attempting to register user in DB");
 
     try (Connection conn = dataSource.getConnection();
         PreparedStatement statement = conn.prepareStatement(sql)) {
@@ -147,6 +160,8 @@ public class PostGresProvider implements IDataBaseProvider {
   @Override
   public String checkPassword(UUID userId, String username) throws SQLException {
     String sql = "SELECT password FROM users WHERE id = ? AND username = ?";
+
+    logger.info("Attempting to collect user password from DB");
 
     try (Connection conn = dataSource.getConnection();
         PreparedStatement statement = conn.prepareStatement(sql)) {

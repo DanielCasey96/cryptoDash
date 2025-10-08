@@ -38,6 +38,7 @@ public class MarketDataController {
     if (unauthorised(token)) return ResponseEntity.status(401).build();
     logger.info("JWT format is valid, proceeding with request");
 
+    logger.info("Attempting to collect market data");
     List<CoinGeckoResponseModel> marketList = marketDataService.getMarketList(fiat);
 
     return ResponseEntity.ok(marketList);
@@ -52,6 +53,7 @@ public class MarketDataController {
     if (unauthorised(token)) return ResponseEntity.status(401).build();
     logger.info("JWT format is valid, proceeding with request");
 
+    logger.info("Attempting to collect market item");
     CoinGeckoResponseModel item = marketDataService.getItem(assetId, fiat);
 
     return ResponseEntity.ok(item);

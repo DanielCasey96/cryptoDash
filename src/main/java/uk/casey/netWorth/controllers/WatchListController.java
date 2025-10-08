@@ -36,7 +36,7 @@ public class WatchListController {
   public ResponseEntity<List<WatchListItemModel>> getWatchList(
       @RequestHeader("userId") UUID userId, @RequestHeader("authorisation") String token)
       throws SQLException {
-    logger.info("Received request with userId: {} and token: {}", userId, token);
+    logger.info("Received request with userId: {}", userId);
 
     if (unauthorised(token)) return ResponseEntity.status(401).build();
     logger.info("JWT format is valid, proceeding with request");
@@ -53,7 +53,7 @@ public class WatchListController {
       @RequestHeader("authorisation") String token,
       @RequestBody WatchListItemModel req)
       throws SQLException {
-    logger.info("Received request with userId: {} and token: {}", userId, token);
+    logger.info("Received request with userId: {}", userId);
 
     if (unauthorised(token)) return ResponseEntity.status(401).build();
     logger.info("JWT format is valid, proceeding with request");
@@ -76,7 +76,7 @@ public class WatchListController {
       @RequestHeader("userId") UUID userId,
       @RequestHeader("authorisation") String token)
       throws SQLException {
-    logger.info("Received request with userId: {} and token: {}", userId, token);
+    logger.info("Received request with userId: {}", userId);
 
     if (unauthorised(token)) return ResponseEntity.status(401).build();
     logger.info("JWT format is valid, proceeding with request");
@@ -93,7 +93,7 @@ public class WatchListController {
       @RequestHeader("authorisation") @NonNull String token,
       @RequestBody WatchListItemModel req)
       throws SQLException {
-    logger.info("Received request with userId: {} and token: {}", userId, token);
+    logger.info("Received request with userId: {}", userId);
 
     if (unauthorised(token)) return ResponseEntity.status(401).build();
     logger.info("JWT format is valid, proceeding with request");

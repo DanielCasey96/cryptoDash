@@ -2,6 +2,8 @@ package uk.casey.netWorth.controllers;
 
 import java.sql.SQLException;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,8 @@ import uk.casey.netWorth.services.UsersService;
 @RestController
 public class UsersController {
 
+  private static final Logger logger = LoggerFactory.getLogger(MarketDataController.class);
+
   private UsersService usersService;
 
   @Autowired
@@ -27,6 +31,7 @@ public class UsersController {
   public ResponseEntity<String> registerUser(@RequestBody RegistrationRequestModel rq)
       throws SQLException {
 
+    logger.info("Attempting to register user");
     String userId = usersService.registerUser(rq.getUsername(), rq.getPassword(), rq.getEmail());
 
     return ResponseEntity.ok().body(userId);
@@ -36,8 +41,8 @@ public class UsersController {
   public ResponseEntity<String> authorise(
       @RequestHeader("userId") UUID userId, @RequestBody LoginRequestModel rq) throws SQLException {
 
+    logger.info("Attempting to authorise user");
     String token = usersService.authoriseUser(userId, rq.getUsername(), rq.getPassword());
-    System.out.println(token);
 
     return ResponseEntity.ok().body(token);
   }
