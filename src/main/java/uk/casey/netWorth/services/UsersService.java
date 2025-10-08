@@ -5,21 +5,21 @@ import java.util.UUID;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 import uk.casey.netWorth.exceptions.AuthenticationException;
-import uk.casey.netWorth.services.providers.PostGresProvider;
+import uk.casey.netWorth.services.providers.IDataBaseProvider;
 import uk.casey.netWorth.utils.IJwtService;
 
 @Component
 public class UsersService {
 
-  private final PostGresProvider postGresProvider;
+  private final IDataBaseProvider postGresProvider;
   private final IJwtService jwtService;
 
-  public UsersService(PostGresProvider postGresProvider, IJwtService jwtService) {
+  public UsersService(IDataBaseProvider postGresProvider, IJwtService jwtService) {
     this.postGresProvider = postGresProvider;
     this.jwtService = jwtService;
   }
 
-  public String registerUser(String username, String password, String email) {
+  public String registerUser(String username, String password, String email) throws SQLException {
     String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
     return postGresProvider.registerUser(username, hashedPassword, email);
   }

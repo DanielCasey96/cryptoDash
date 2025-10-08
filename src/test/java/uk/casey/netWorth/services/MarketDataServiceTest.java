@@ -1,5 +1,6 @@
 package uk.casey.netWorth.services;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
@@ -26,6 +27,7 @@ public class MarketDataServiceTest {
 
     List<CoinGeckoResponseModel> result = marketDataService.getMarketList("GBP");
     assertNotNull(result);
+    assertEquals(1, result.size());
   }
 
   @Test

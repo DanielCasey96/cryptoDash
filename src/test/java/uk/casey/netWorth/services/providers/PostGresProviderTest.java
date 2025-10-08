@@ -190,4 +190,66 @@ public class PostGresProviderTest {
         assertThrows(SQLException.class, () -> provider.updateItem(userId, assetId, value));
     assertTrue(ex.getCause() instanceof SQLException);
   }
+
+  @Test
+  void registerUser_returnsOk() throws Exception {
+    String username = "David";
+    String hashedPassword = "1234";
+    String email = "clear@yahoo.com";
+    String userId = UUID.randomUUID().toString();
+    PostGresProvider provider = postGresProvider();
+
+    when(statement.executeQuery()).thenReturn(resultSet);
+    when(resultSet.next()).thenReturn(true, false);
+    when(resultSet.getString("id")).thenReturn(userId);
+
+    String response = provider.registerUser(username, hashedPassword, email);
+
+    verify(statement).setString(1, username);
+    verify(statement).setString(2, hashedPassword);
+    verify(statement).setString(3, email);
+
+    assertEquals(response, resultSet.getString("id"));
+  }
+
+  @Test
+  void registerUser_sqlExceptionThrown() throws Exception {
+    String username = "David";
+    String hashedPassword = "1234";
+    String email = "clear@yahoo.com";
+    when(dataSource.getConnection()).thenThrow(new SQLException("sadge"));
+    PostGresProvider provider = new PostGresProvider(dataSource);
+
+    SQLException ex =
+        assertThrows(
+            SQLException.class, () -> provider.registerUser(username, hashedPassword, email));
+    assertTrue(ex.getCause() instanceof SQLException);
+  }
+
+  @Test
+  void checkPassword_returnsOk() throws Exception {
+    UUID userId = UUID.randomUUID();
+    String username = "David";
+    PostGresProvider provider = postGresProvider();
+    when(statement.executeQuery()).thenReturn(resultSet);
+    when(resultSet.next()).thenReturn(true, false);
+
+    String checkPassword = provider.checkPassword(userId, username);
+
+    verify(statement).setObject(1, userId);
+    verify(statement).setString(2, username);
+
+    assertEquals(checkPassword, resultSet.getString("password"));
+  }
+
+  @Test
+  void checkPassword_sqlExceptionThrown() throws Exception {
+    UUID userId = UUID.randomUUID();
+    String username = "David";
+    when(dataSource.getConnection()).thenThrow(new SQLException("sadge"));
+    PostGresProvider provider = new PostGresProvider(dataSource);
+    SQLException ex =
+        assertThrows(SQLException.class, () -> provider.checkPassword(userId, username));
+    assertTrue(ex.getCause() instanceof SQLException);
+  }
 }

@@ -25,7 +25,7 @@ public interface IDataBaseProvider {
 
   boolean updateItem(UUID userId, int assetId, BigDecimal value) throws SQLException;
 
-  String registerUser(String username, String hashedPassword, String email);
+  String registerUser(String username, String hashedPassword, String email) throws SQLException;
 
   String checkPassword(UUID userId, String username) throws SQLException;
 }

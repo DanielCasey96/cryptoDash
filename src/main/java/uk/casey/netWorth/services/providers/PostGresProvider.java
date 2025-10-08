@@ -122,7 +122,8 @@ public class PostGresProvider implements IDataBaseProvider {
   }
 
   @Override
-  public String registerUser(String username, String hashedPassword, String email) {
+  public String registerUser(String username, String hashedPassword, String email)
+      throws SQLException {
     String sql = "INSERT INTO users (username, password, email) VALUES (?, ?, ?) RETURNING id";
 
     try (Connection conn = dataSource.getConnection();
@@ -135,11 +136,11 @@ public class PostGresProvider implements IDataBaseProvider {
         if (rs.next()) {
           return rs.getString("id");
         } else {
-          throw new RuntimeException("User registration failed, no ID returned.");
+          throw new SQLException("User registration failed, no ID returned.");
         }
       }
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
+    } catch (SQLException ex) {
+      throw new SQLException("Unable to register user", ex);
     }
   }
 
@@ -156,9 +157,11 @@ public class PostGresProvider implements IDataBaseProvider {
         if (rs.next()) {
           return rs.getString("password");
         } else {
-          throw new RuntimeException("Credential Issue");
+          throw new SQLException("Credential Issue");
         }
       }
+    } catch (SQLException ex) {
+      throw new SQLException("Unable to verify user", ex);
     }
   }
 }
